@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Select Jenkinsfile') {
+            steps {
+                script {
+                    // Check which branch is being built and load the corresponding Jenkinsfile
+                    if (env.BRANCH_NAME == 'frontend_branch') {
+                        echo "Using Jenkinsfile from frontend folder"
+                        load 'frontend/jenkinsfile'  // Path to the frontend Jenkinsfile
+                    } else if (env.BRANCH_NAME == 'backend') {
+                        echo "Using Jenkinsfile from backend folder"
+                        load 'backend/jenkinsfile'  // Path to the backend Jenkinsfile
+                    } else if (env.BRANCH_NAME == 'master_branch') {
+                        echo "Using jenkinsfile from the root directory"
+                        load 'jenkinsfile'  // Use the Jenkinsfile in the root directory
+                    } else {
+                        echo "No specific Jenkinsfile for this branch"
+                    }
+                }
+            }
+        }
+    }
+}
